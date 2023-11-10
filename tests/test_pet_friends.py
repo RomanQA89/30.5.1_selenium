@@ -11,17 +11,28 @@ def test_all_my_pets_present():
     # Неявное ожидание.
     pytest.driver.implicitly_wait(10)
 
-    # Подсчет карточек моих питомцев
-    number_of_pets = pytest.driver.find_elements(By.CSS_SELECTOR, '.table tbody tr')
-    # Блок статистики с моими питомцами
-    stat_of_pets = pytest.driver.find_element(By.CSS_SELECTOR, '.\\.col-sm-4.left')
+# Первый вариант.
 
-    pattern = r'Питомцев: (\d+)'                    # Сырая строка из статистики по моим питомцам, \d+ - число моих питомцев
-    result = re.search(pattern, stat_of_pets.text)  # Результат поиска строки в блоке статистики, применен модуль регулярных выражений
-    amount_of_pets = int(result.group(1))           # Метод group применен для второй части (\d+) строчки pattern, где отображено число моих питомцев
-                                                    # group() – возвращает фрагмент строки, в котором было обнаружено совпадение.
+    # # Подсчет карточек моих питомцев
+    # number_of_pets = pytest.driver.find_elements(By.CSS_SELECTOR, '.table tbody tr')
+    # # Блок статистики с моими питомцами
+    # stat_of_pets = pytest.driver.find_element(By.CSS_SELECTOR, '.\\.col-sm-4.left')
+
+    # pattern = r'Питомцев: (\d+)'                    # Сырая строка из статистики по моим питомцам, \d+ - число моих питомцев
+    # result = re.search(pattern, stat_of_pets.text)  # Результат поиска строки в блоке статистики, применен модуль регулярных выражений
+    # amount_of_pets = int(result.group(1))           # Метод group применен для второй части (\d+) строчки pattern, где отображено число моих питомцев
+    #                                                 # group() – возвращает фрагмент строки, в котором было обнаружено совпадение.
+    # # Сравнение результатов
+    # assert len(number_of_pets) == amount_of_pets, "Не все питомцы присутствуют на моей странице."
+
+# Второй вариант.
+
+    # Извлечение числа моих питомцев из блока статистики.
+    pets_number = pytest.driver.find_element(By.XPATH, '//div[@class=".col-sm-4 left"]').text.split('\n')[1].split(' ')[1]
+    # Подсчет карточек моих питомцев
+    pets_count = pytest.driver.find_elements(By.XPATH, '//table[@class="table table-hover"]/tbody/tr')
     # Сравнение результатов
-    assert len(number_of_pets) == amount_of_pets, "Не все питомцы присутствуют на моей странице."
+    assert int(pets_number) == len(pets_count), "Не все питомцы присутствуют на моей странице."
 
 
 def test_half_of_my_pets_have_photo():
